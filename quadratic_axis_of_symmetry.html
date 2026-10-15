@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quadratic Relationships (Parabola): Axis of symmetry</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f7f7f7;
+            user-select: none; 
+            -webkit-user-select: none;
+        }
+        #app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        #header {
+            background-color: white;
+            text-align: center;
+            padding: 1rem;
+            font-size: 1.25rem;
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        #main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        #control-panel {
+            width: 350px;
+            background-color: #f7f7f7;
+            border-right: 1px solid #ccc;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+            z-index: 10;
+        }
+        .expression-row {
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+            min-height: 50px;
+        }
+        .color-indicator {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .color-indicator.red { background-color: #c74440; color: white; }
+        .color-indicator.blue { background-color: #2d70b3; color: white; }
+        
+        .math-content {
+            flex-grow: 1;
+            font-size: 1.1rem;
+        }
+        input[type=range] {
+            width: 100%;
+            margin-top: 15px;
+            accent-color: #2d70b3;
+        }
+        #graph-container {
+            flex: 1;
+            position: relative;
+            background-color: white;
+            cursor: default; 
+            touch-action: none; 
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        #tooltip {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid #333;
+            padding: 8px 12px;
+            border-radius: 6px;
+            pointer-events: none;
+            display: none;
+            font-size: 14px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            z-index: 20;
+            font-family: 'Times New Roman', Times, serif; 
+        }
+        .instruction-text {
+            color: #555;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        .slider-container {
+            flex-direction: column; 
+            align-items: stretch; 
+            padding-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+    <div id="header">
+        Quadratic Relationships (Parabola): Axis of symmetry
+    </div>
+    
+    <div id="main-content">
+        <!-- Control Panel -->
+        <div id="control-panel">
+            <div class="instruction-text">
+                Move the sliders to change the value of "k" and "c". Click and drag along either curve to see coordinates.
+            </div>
+
+            <!-- Base Function -->
+            <div class="expression-row">
+                <div class="color-indicator red">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16M20 4v16M4 20h16M4 4h16"/></svg>
+                </div>
+                <div class="math-content">
+                    \( f(x) = x^2 \)
+                </div>
+            </div>
+
+            <!-- Transformed Function -->
+            <div class="expression-row">
+                <div class="color-indicator blue">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16M20 4v16M4 20h16M4 4h16"/></svg>
+                </div>
+                <div class="math-content">
+                    \( y = kx^2 + c \)
+                </div>
+            </div>
+
+            <!-- Slider for k -->
+            <div class="expression-row slider-container">
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                     <div class="math-content" style="margin-bottom: 0;">
+                        \( k = \) <span id="k-value-display">1.0</span>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="text-sm text-gray-500">-10</span>
+                    <input type="range" id="k-slider" min="-10" max="10" step="0.1" value="1">
+                    <span class="text-sm text-gray-500">10</span>
+                </div>
+            </div>
+
+            <!-- Slider for c -->
+            <div class="expression-row slider-container">
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                     <div class="math-content" style="margin-bottom: 0;">
+                        \( c = \) <span id="c-value-display">0.0</span>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="text-sm text-gray-500">-10</span>
+                    <input type="range" id="c-slider" min="-10" max="10" step="0.1" value="0">
+                    <span class="text-sm text-gray-500">10</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Graph Area -->
+        <div id="graph-container">
+            <canvas id="graphCanvas"></canvas>
+            <div id="tooltip"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('graphCanvas');
+    const ctx = canvas.getContext('2d');
+    const graphContainer = document.getElementById('graph-container');
+    const kSlider = document.getElementById('k-slider');
+    const kDisplay = document.getElementById('k-value-display');
+    const cSlider = document.getElementById('c-slider');
+    const cDisplay = document.getElementById('c-value-display');
+    const tooltip = document.getElementById('tooltip');
+
+    // Graph bounds
+    const xMin = -10, xMax = 10, yMin = -10, yMax = 10;
+    
+    // State variables
+    let kValue = 1;
+    let cValue = 0;
+    let width, height;
+    
+    // Active point info: { x, curveIndex (0=red, 1=blue) }
+    let activePoint = null; 
+    let isDragging = false;
+
+    // Colors
+    const colorGrid = '#e5e7eb', colorAxis = '#374151';
+    const colorRedCurve = '#c74440', colorBlueCurve = '#2d70b3';
+    const colorAxisOfSymmetry = '#22c55e'; // Green for axis of symmetry
+    
+    // Settings
+    const SNAP_DISTANCE = 20;
+
+    function mathToScreenX(mathX) { return ((mathX - xMin) / (xMax - xMin)) * width; }
+    function mathToScreenY(mathY) { return height - ((mathY - yMin) / (yMax - yMin)) * height; }
+    function screenToMathX(screenX) { return xMin + (screenX / width) * (xMax - xMin); }
+    function screenToMathY(screenY) { return yMin + ((height - screenY) / height) * (yMax - yMin); }
+
+    function resizeCanvas() {
+        const rect = graphContainer.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        width = rect.width; height = rect.height;
+        canvas.width = width * dpr; canvas.height = height * dpr;
+        ctx.scale(dpr, dpr);
+        canvas.style.width = `${width}px`; canvas.style.height = `${height}px`;
+        draw();
+    }
+
+    function drawGridAndAxes() {
+        ctx.clearRect(0, 0, width, height);
+
+        // Grid
+        ctx.beginPath();
+        ctx.strokeStyle = colorGrid;
+        ctx.lineWidth = 1;
+        for (let x = xMin; x <= xMax; x++) {
+            if (x === 0) continue;
+            ctx.moveTo(mathToScreenX(x), 0); ctx.lineTo(mathToScreenX(x), height);
+        }
+        for (let y = yMin; y <= yMax; y++) {
+            if (y === 0) continue;
+            ctx.moveTo(0, mathToScreenY(y)); ctx.lineTo(width, mathToScreenY(y));
+        }
+        ctx.stroke();
+
+        // Axes
+        ctx.beginPath();
+        ctx.strokeStyle = colorAxis;
+        ctx.lineWidth = 1.5;
+        const originX = mathToScreenX(0), originY = mathToScreenY(0);
+        ctx.moveTo(0, originY); ctx.lineTo(width, originY); // X
+        ctx.moveTo(originX, 0); ctx.lineTo(originX, height); // Y
+        ctx.stroke();
+
+        // Axis of Symmetry (Green Dashed Line)
+        // For y = kx^2 + c, the axis of symmetry is always x = 0
+        ctx.beginPath();
+        ctx.strokeStyle = colorAxisOfSymmetry;
+        ctx.lineWidth = 2;
+        ctx.setLineDash([5, 5]); // Dashed line pattern
+        ctx.moveTo(originX, 0);
+        ctx.lineTo(originX, height);
+        ctx.stroke();
+        ctx.setLineDash([]); // Reset dash for other drawings
+
+        // Arrows
+        const arrSize = 10;
+        ctx.fillStyle = colorAxis;
+        // X-right
+        ctx.beginPath(); ctx.moveTo(width, originY); ctx.lineTo(width - arrSize, originY - arrSize/2); ctx.lineTo(width - arrSize, originY + arrSize/2); ctx.fill();
+        // X-left
+        ctx.beginPath(); ctx.moveTo(0, originY); ctx.lineTo(arrSize, originY - arrSize/2); ctx.lineTo(arrSize, originY + arrSize/2); ctx.fill();
+        // Y-top
+        ctx.beginPath(); ctx.moveTo(originX, 0); ctx.lineTo(originX - arrSize/2, arrSize); ctx.lineTo(originX + arrSize/2, arrSize); ctx.fill();
+        // Y-bottom
+        ctx.beginPath(); ctx.moveTo(originX, height); ctx.lineTo(originX - arrSize/2, height - arrSize); ctx.lineTo(originX + arrSize/2, height - arrSize); ctx.fill();
+
+        // Labels
+        ctx.fillStyle = '#666'; ctx.font = '12px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+        for (let x = xMin; x <= xMax; x += 2) {
+            if (x === 0) continue;
+            ctx.fillText(x, mathToScreenX(x), originY + 5);
+        }
+        ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+        for (let y = yMin; y <= yMax; y += 2) {
+            if (y === 0) continue;
+            ctx.fillText(y, originX - 5, mathToScreenY(y));
+        }
+        ctx.textAlign = 'right'; ctx.textBaseline = 'top';
+        ctx.fillText('0', originX - 5, originY + 5);
+        
+        ctx.font = 'italic 16px Arial'; ctx.fillStyle = 'black';
+        ctx.fillText('x', width - 15, originY - 15); ctx.fillText('y', originX + 15, 15);
+    }
+
+    function drawCurve(func, color, lineWidth = 2) {
+        ctx.beginPath();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = lineWidth;
+        let isFirstPoint = true;
+
+        for (let screenX = 0; screenX <= width; screenX++) {
+            const mathX = screenToMathX(screenX);
+            const mathY = func(mathX);
+            const screenY = mathToScreenY(mathY);
+            if (screenY > -50 && screenY < height + 50) {
+                if (isFirstPoint) { ctx.moveTo(screenX, screenY); isFirstPoint = false; } 
+                else { ctx.lineTo(screenX, screenY); }
+            } else { isFirstPoint = true; }
+        }
+        ctx.stroke();
+    }
+
+    function formatExact(val) {
+        if (Math.abs(Math.round(val) - val) < 0.0001) return Math.round(val).toString();
+        const denoms = [2, 3, 4, 5, 8, 10];
+        for (let d of denoms) {
+            let n = val * d;
+            if (Math.abs(Math.round(n) - n) < 0.0001) return `${Math.round(n)}/${d}`;
+        }
+        const sq = val * val;
+        if (Math.abs(Math.round(sq) - sq) < 0.0001) {
+             const rSq = Math.round(sq);
+             if (!Number.isInteger(Math.sqrt(rSq))) return (val < 0 ? "-" : "") + `\\sqrt{${rSq}}`;
+        }
+        return val.toFixed(2);
+    }
+
+    function getActivePointMathY() {
+        if (!activePoint) return null;
+        if (activePoint.curveIndex === 0) return activePoint.x * activePoint.x;
+        else return (kValue * activePoint.x * activePoint.x) + cValue;
+    }
+
+    function drawActivePoint() {
+        if (!activePoint) return;
+        const mathY = getActivePointMathY();
+        const sX = mathToScreenX(activePoint.x), sY = mathToScreenY(mathY);
+        ctx.beginPath();
+        ctx.arc(sX, sY, isDragging ? 7 : 5, 0, 2 * Math.PI);
+        ctx.fillStyle = activePoint.curveIndex === 0 ? colorRedCurve : colorBlueCurve;
+        ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = 'white'; ctx.stroke();
+        
+        if (isDragging) {
+             ctx.beginPath(); ctx.arc(sX, sY, 12, 0, 2 * Math.PI);
+             ctx.fillStyle = activePoint.curveIndex === 0 ? 'rgba(199, 68, 64, 0.2)' : 'rgba(45, 112, 179, 0.2)';
+             ctx.fill();
+        }
+    }
+    
+    function updateTooltip() {
+        if (!activePoint && !isDragging) { tooltip.style.display = 'none'; return; }
+        const mathY = getActivePointMathY();
+        const sX = mathToScreenX(activePoint.x), sY = mathToScreenY(mathY);
+        const exX = formatExact(activePoint.x), exY = formatExact(mathY);
+        tooltip.innerHTML = `\\( (${exX}, ${exY}) \\)`;
+        
+        if (window.MathJax) {
+            MathJax.typesetPromise([tooltip]).then(() => { positionTooltip(sX, sY); });
+        } else {
+             tooltip.innerHTML = `(${activePoint.x.toFixed(2)}, ${mathY.toFixed(2)})`;
+             positionTooltip(sX, sY);
+        }
+    }
+
+    function positionTooltip(sX, sY) {
+        tooltip.style.display = 'block';
+        let tL = sX + 15, tT = sY - 35; 
+        const tRect = tooltip.getBoundingClientRect();
+        if (tL + tRect.width > width) tL = sX - tRect.width - 15;
+        if (tT < 0) tT = sY + 20;
+        tooltip.style.left = `${tL}px`; tooltip.style.top = `${tT}px`;
+    }
+
+    function draw() {
+        drawGridAndAxes();
+        drawCurve(x => x * x, colorRedCurve, 2);
+        drawCurve(x => (kValue * x * x) + cValue, colorBlueCurve, 2.5);
+        drawActivePoint();
+        updateTooltip();
+    }
+
+    function checkProximity(sX, sY) {
+        const mX = screenToMathX(sX), mY = screenToMathY(sY);
+        const redY = mathToScreenY(mX * mX);
+        const blueY = mathToScreenY((kValue * mX * mX) + cValue);
+        const dR = Math.abs(sY - redY), dB = Math.abs(sY - blueY);
+
+        if (dB < SNAP_DISTANCE && dB <= dR) return { index: 1, dist: dB };
+        else if (dR < SNAP_DISTANCE) return { index: 0, dist: dR };
+        return null; 
+    }
+
+    function startInteraction(e) {
+        e.preventDefault(); 
+        const rect = canvas.getBoundingClientRect();
+        const cX = e.touches ? e.touches[0].clientX : e.clientX;
+        const cY = e.touches ? e.touches[0].clientY : e.clientY;
+        const mSX = cX - rect.left, mSY = cY - rect.top;
+        const prox = checkProximity(mSX, mSY);
+
+        if (prox) {
+            activePoint = { x: screenToMathX(mSX), curveIndex: prox.index };
+            isDragging = true; graphContainer.style.cursor = 'grabbing';
+        } else {
+            activePoint = null; isDragging = false;
+        }
+        draw();
+    }
+
+    function moveInteraction(e) {
+        if (!isDragging && !activePoint) {
+             if (!e.touches) { 
+                const rect = canvas.getBoundingClientRect();
+                const prox = checkProximity(e.clientX - rect.left, e.clientY - rect.top);
+                graphContainer.style.cursor = prox ? 'grab' : 'default';
+             }
+            return;
+        }
+        if (isDragging) {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const cX = e.touches ? e.touches[0].clientX : e.clientX;
+            let mSX = Math.max(0, Math.min(cX - rect.left, width));
+            activePoint.x = screenToMathX(mSX);
+            draw();
+        }
+    }
+
+    function endInteraction() {
+        if (isDragging) {
+            isDragging = false; graphContainer.style.cursor = 'grab'; draw(); 
+        }
+    }
+
+    canvas.addEventListener('mousedown', startInteraction);
+    window.addEventListener('mousemove', moveInteraction); 
+    window.addEventListener('mouseup', endInteraction);
+    canvas.addEventListener('touchstart', startInteraction, {passive: false});
+    window.addEventListener('touchmove', moveInteraction, {passive: false});
+    window.addEventListener('touchend', endInteraction);
+
+    kSlider.addEventListener('input', function() {
+        kValue = parseFloat(this.value); kDisplay.innerText = kValue.toFixed(1); draw(); 
+    });
+    
+    cSlider.addEventListener('input', function() {
+        cValue = parseFloat(this.value); cDisplay.innerText = cValue.toFixed(1); draw(); 
+    });
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    
+    window.onload = () => { if (window.MathJax) MathJax.typesetPromise(); }
+</script>
+</body>
+</html>

@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quadratic Relationships (Parabola): Wide or Narrow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f7f7f7;
+            /* Prevent text selection while dragging */
+            user-select: none; 
+            -webkit-user-select: none;
+        }
+        #app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        #header {
+            background-color: white;
+            text-align: center;
+            padding: 1rem;
+            font-size: 1.25rem;
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        #main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        #control-panel {
+            width: 350px;
+            background-color: #f7f7f7;
+            border-right: 1px solid #ccc;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+            z-index: 10;
+        }
+        .expression-row {
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+            min-height: 50px;
+        }
+        .color-indicator {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        /* Color themes for indicators matching curves */
+        .color-indicator.red { background-color: #c74440; color: white; }
+        .color-indicator.blue { background-color: #2d70b3; color: white; }
+        
+        .math-content {
+            flex-grow: 1;
+            font-size: 1.1rem;
+        }
+        input[type=range] {
+            width: 100%;
+            margin-top: 15px;
+            accent-color: #2d70b3;
+        }
+        #graph-container {
+            flex: 1;
+            position: relative;
+            background-color: white;
+            /* Use default cursor, change to pointer when hovering near a curve */
+            cursor: default; 
+            touch-action: none; /* Prevent default touch actions like scrolling to allow dragging */
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        /* Tooltip for displaying exact coordinates */
+        #tooltip {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid #333;
+            padding: 8px 12px;
+            border-radius: 6px;
+            pointer-events: none; /* Let clicks pass through to canvas */
+            display: none;
+            font-size: 14px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            z-index: 20;
+            font-family: 'Times New Roman', Times, serif; 
+        }
+        .instruction-text {
+            color: #555;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+    <div id="header">
+        Quadratic Relationships (Parabola): Wide or Narrow
+    </div>
+    
+    <div id="main-content">
+        <!-- Control Panel (Left Side) -->
+        <div id="control-panel">
+            <div class="instruction-text">
+                Move the slider to change the value of "k". Click and drag along either curve to see coordinates.
+            </div>
+
+            <!-- Base Function f(x) = x^2 -->
+            <div class="expression-row">
+                <div class="color-indicator red">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16M20 4v16M4 20h16M4 4h16"/></svg>
+                </div>
+                <div class="math-content">
+                    \( f(x) = x^2 \)
+                </div>
+            </div>
+
+            <!-- Transformed Function y = kx^2 -->
+            <div class="expression-row">
+                <div class="color-indicator blue">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16M20 4v16M4 20h16M4 4h16"/></svg>
+                </div>
+                <div class="math-content">
+                    \( y = kx^2 \)
+                </div>
+            </div>
+
+            <!-- Slider for k -->
+            <div class="expression-row" style="flex-direction: column; align-items: stretch; padding-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                     <div class="math-content" style="margin-bottom: 0;">
+                        \( k = \) <span id="k-value-display">1.0</span>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="text-sm text-gray-500">0</span>
+                    <input type="range" id="k-slider" min="0" max="10" step="0.1" value="1">
+                    <span class="text-sm text-gray-500">10</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Graph Area (Right Side) -->
+        <div id="graph-container">
+            <canvas id="graphCanvas"></canvas>
+            <div id="tooltip"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('graphCanvas');
+    const ctx = canvas.getContext('2d');
+    const graphContainer = document.getElementById('graph-container');
+    const kSlider = document.getElementById('k-slider');
+    const kDisplay = document.getElementById('k-value-display');
+    const tooltip = document.getElementById('tooltip');
+
+    // Graph Configuration
+    const xMin = -10;
+    const xMax = 10;
+    const yMin = -10;
+    const yMax = 10;
+    
+    // State variables
+    let kValue = 1;
+    let width, height;
+    
+    // Store information about the active point
+    // { x: number, curveIndex: 0 (red) | 1 (blue) }
+    let activePoint = null; 
+    let isDragging = false;
+    let hoverState = null; // 'red' or 'blue' when hovering near a curve
+
+    // Colors
+    const colorGrid = '#e5e7eb';
+    const colorAxis = '#374151';
+    const colorRedCurve = '#c74440';
+    const colorBlueCurve = '#2d70b3';
+    
+    // Interaction settings
+    const SNAP_DISTANCE = 20; // Pixels to snap to curve
+
+    // Helper to map math coordinates to pixel coordinates
+    function mathToScreenX(mathX) {
+        return ((mathX - xMin) / (xMax - xMin)) * width;
+    }
+
+    function mathToScreenY(mathY) {
+        return height - ((mathY - yMin) / (yMax - yMin)) * height;
+    }
+
+    // Helper to map pixel coordinates back to math coordinates
+    function screenToMathX(screenX) {
+        return xMin + (screenX / width) * (xMax - xMin);
+    }
+
+    function screenToMathY(screenY) {
+        return yMin + ((height - screenY) / height) * (yMax - yMin);
+    }
+
+    function resizeCanvas() {
+        const rect = graphContainer.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        
+        width = rect.width;
+        height = rect.height;
+        
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+        
+        ctx.scale(dpr, dpr);
+        canvas.style.width = `${width}px`;
+        canvas.style.height = `${height}px`;
+        
+        draw();
+    }
+
+    function drawGridAndAxes() {
+        ctx.clearRect(0, 0, width, height);
+
+        // --- Draw Grid ---
+        ctx.beginPath();
+        ctx.strokeStyle = colorGrid;
+        ctx.lineWidth = 1;
+
+        // Vertical grid lines
+        for (let x = xMin; x <= xMax; x++) {
+            if (x === 0) continue;
+            const screenX = mathToScreenX(x);
+            ctx.moveTo(screenX, 0);
+            ctx.lineTo(screenX, height);
+        }
+
+        // Horizontal grid lines
+        for (let y = yMin; y <= yMax; y++) {
+            if (y === 0) continue;
+            const screenY = mathToScreenY(y);
+            ctx.moveTo(0, screenY);
+            ctx.lineTo(width, screenY);
+        }
+        ctx.stroke();
+
+        // --- Draw Axes ---
+        ctx.beginPath();
+        ctx.strokeStyle = colorAxis;
+        ctx.lineWidth = 1.5;
+
+        const originX = mathToScreenX(0);
+        const originY = mathToScreenY(0);
+
+        // X-axis
+        ctx.moveTo(0, originY);
+        ctx.lineTo(width, originY);
+        
+        // Y-axis
+        ctx.moveTo(originX, 0);
+        ctx.lineTo(originX, height);
+        ctx.stroke();
+
+        // --- Draw Arrows on Axes ---
+        const arrowSize = 10;
+        ctx.fillStyle = colorAxis;
+        
+        // X-axis right arrow
+        ctx.beginPath();
+        ctx.moveTo(width, originY);
+        ctx.lineTo(width - arrowSize, originY - arrowSize/2);
+        ctx.lineTo(width - arrowSize, originY + arrowSize/2);
+        ctx.fill();
+
+        // X-axis left arrow
+        ctx.beginPath();
+        ctx.moveTo(0, originY);
+        ctx.lineTo(arrowSize, originY - arrowSize/2);
+        ctx.lineTo(arrowSize, originY + arrowSize/2);
+        ctx.fill();
+
+        // Y-axis top arrow
+        ctx.beginPath();
+        ctx.moveTo(originX, 0);
+        ctx.lineTo(originX - arrowSize/2, arrowSize);
+        ctx.lineTo(originX + arrowSize/2, arrowSize);
+        ctx.fill();
+
+        // Y-axis bottom arrow
+        ctx.beginPath();
+        ctx.moveTo(originX, height);
+        ctx.lineTo(originX - arrowSize/2, height - arrowSize);
+        ctx.lineTo(originX + arrowSize/2, height - arrowSize);
+        ctx.fill();
+
+        // --- Draw Tick Labels ---
+        ctx.fillStyle = '#666';
+        ctx.font = '12px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+
+        // X-axis labels
+        for (let x = xMin; x <= xMax; x += 2) {
+            if (x === 0) continue;
+            ctx.fillText(x, mathToScreenX(x), originY + 5);
+        }
+
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        // Y-axis labels
+        for (let y = yMin; y <= yMax; y += 2) {
+            if (y === 0) continue;
+            ctx.fillText(y, originX - 5, mathToScreenY(y));
+        }
+
+        // Origin label (0)
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'top';
+        ctx.fillText('0', originX - 5, originY + 5);
+        
+        // Axis Labels (x, y)
+        ctx.font = 'italic 16px Arial';
+        ctx.fillStyle = 'black';
+        ctx.fillText('x', width - 15, originY - 15);
+        ctx.fillText('y', originX + 15, 15);
+    }
+
+    function drawCurve(func, color, lineWidth = 2) {
+        ctx.beginPath();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = lineWidth;
+
+        const step = (xMax - xMin) / width;
+        let isFirstPoint = true;
+
+        for (let screenX = 0; screenX <= width; screenX++) {
+            const mathX = screenToMathX(screenX);
+            const mathY = func(mathX);
+            const screenY = mathToScreenY(mathY);
+
+            // Optimization and drawing safety bounds
+            if (screenY > -50 && screenY < height + 50) {
+                if (isFirstPoint) {
+                    ctx.moveTo(screenX, screenY);
+                    isFirstPoint = false;
+                } else {
+                    ctx.lineTo(screenX, screenY);
+                }
+            } else {
+                isFirstPoint = true; 
+            }
+        }
+        ctx.stroke();
+    }
+
+    // Function to try and display "exact" forms
+    function formatExact(val) {
+        if (Math.abs(Math.round(val) - val) < 0.0001) return Math.round(val).toString();
+        
+        const denominators = [2, 3, 4, 5, 8, 10];
+        for (let d of denominators) {
+            let n = val * d;
+            if (Math.abs(Math.round(n) - n) < 0.0001) {
+                return `${Math.round(n)}/${d}`;
+            }
+        }
+        
+        const squared = val * val;
+        if (Math.abs(Math.round(squared) - squared) < 0.0001) {
+             const roundedSq = Math.round(squared);
+             if (!Number.isInteger(Math.sqrt(roundedSq))) {
+                 return (val < 0 ? "-" : "") + `\\sqrt{${roundedSq}}`;
+             }
+        }
+
+        return val.toFixed(2);
+    }
+
+    function getActivePointMathY() {
+        if (!activePoint) return null;
+        if (activePoint.curveIndex === 0) { // Red curve f(x) = x^2
+            return activePoint.x * activePoint.x;
+        } else { // Blue curve y = kx^2
+            return kValue * activePoint.x * activePoint.x;
+        }
+    }
+
+    function drawActivePoint() {
+        if (!activePoint) return;
+
+        const mathY = getActivePointMathY();
+        const screenX = mathToScreenX(activePoint.x);
+        const screenY = mathToScreenY(mathY);
+
+        ctx.beginPath();
+        // Slightly larger if dragging
+        ctx.arc(screenX, screenY, isDragging ? 7 : 5, 0, 2 * Math.PI);
+        ctx.fillStyle = activePoint.curveIndex === 0 ? colorRedCurve : colorBlueCurve;
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'white';
+        ctx.stroke();
+        
+        // Add subtle halo effect when dragging
+        if (isDragging) {
+             ctx.beginPath();
+             ctx.arc(screenX, screenY, 12, 0, 2 * Math.PI);
+             ctx.fillStyle = activePoint.curveIndex === 0 ? 'rgba(199, 68, 64, 0.2)' : 'rgba(45, 112, 179, 0.2)';
+             ctx.fill();
+        }
+    }
+    
+    function updateTooltip() {
+        if (!activePoint && !isDragging) {
+            tooltip.style.display = 'none';
+            return;
+        }
+
+        const mathY = getActivePointMathY();
+        const screenX = mathToScreenX(activePoint.x);
+        const screenY = mathToScreenY(mathY);
+        
+        const exactX = formatExact(activePoint.x);
+        const exactY = formatExact(mathY);
+
+        tooltip.innerHTML = `\\( (${exactX}, ${exactY}) \\)`;
+        
+        if (window.MathJax) {
+            MathJax.typesetPromise([tooltip]).then(() => {
+                positionTooltip(screenX, screenY);
+            });
+        } else {
+             tooltip.innerHTML = `(${activePoint.x.toFixed(2)}, ${mathY.toFixed(2)})`;
+             positionTooltip(screenX, screenY);
+        }
+    }
+
+    function positionTooltip(screenX, screenY) {
+        tooltip.style.display = 'block';
+        
+        let tLeft = screenX + 15;
+        let tTop = screenY - 35; // slightly higher to avoid finger on mobile
+
+        const tRect = tooltip.getBoundingClientRect();
+        if (tLeft + tRect.width > width) {
+            tLeft = screenX - tRect.width - 15;
+        }
+        if (tTop < 0) {
+            tTop = screenY + 20;
+        }
+
+        tooltip.style.left = `${tLeft}px`;
+        tooltip.style.top = `${tTop}px`;
+    }
+
+    function draw() {
+        drawGridAndAxes();
+        
+        // Base function (Red)
+        drawCurve(x => x * x, colorRedCurve, 2);
+        
+        // Transformed function (Blue)
+        drawCurve(x => kValue * x * x, colorBlueCurve, 2.5);
+
+        drawActivePoint();
+        updateTooltip();
+    }
+
+    // Helper to find closest curve
+    function checkProximityToCurves(screenX, screenY) {
+        const mathX = screenToMathX(screenX);
+        const mathY = screenToMathY(screenY);
+
+        // Calculate theoretical Y values on curves
+        const redMathY = mathX * mathX;
+        const blueMathY = kValue * mathX * mathX;
+        
+        const redScreenY = mathToScreenY(redMathY);
+        const blueScreenY = mathToScreenY(blueMathY);
+
+        const distToRed = Math.abs(screenY - redScreenY);
+        const distToBlue = Math.abs(screenY - blueScreenY);
+
+        if (distToBlue < SNAP_DISTANCE && distToBlue <= distToRed) {
+            return { index: 1, dist: distToBlue }; // Closer to blue or equidistant (prefer interactive curve)
+        } else if (distToRed < SNAP_DISTANCE) {
+            return { index: 0, dist: distToRed }; // Closer to red
+        }
+        return null; // Not close to either
+    }
+
+    // --- Interaction Logic ---
+    
+    function startInteraction(e) {
+        e.preventDefault(); // Prevent default touch behavior
+        const rect = canvas.getBoundingClientRect();
+        // Handle touch or mouse event
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        
+        const mouseScreenX = clientX - rect.left;
+        const mouseScreenY = clientY - rect.top;
+
+        const proximity = checkProximityToCurves(mouseScreenX, mouseScreenY);
+
+        if (proximity !== null) {
+            activePoint = {
+                x: screenToMathX(mouseScreenX),
+                curveIndex: proximity.index
+            };
+            isDragging = true;
+            graphContainer.style.cursor = 'grabbing';
+            draw();
+        } else {
+            // Clicked away from curves, clear active point
+            activePoint = null;
+            isDragging = false;
+            draw();
+        }
+    }
+
+    function moveInteraction(e) {
+        if (!isDragging && !activePoint) {
+            // Handle hover state for cursor changes
+             if (!e.touches) { // Only do hover effects for mouse
+                const rect = canvas.getBoundingClientRect();
+                const mouseScreenX = e.clientX - rect.left;
+                const mouseScreenY = e.clientY - rect.top;
+                const proximity = checkProximityToCurves(mouseScreenX, mouseScreenY);
+                if (proximity) {
+                    graphContainer.style.cursor = 'grab';
+                } else {
+                    graphContainer.style.cursor = 'default';
+                }
+             }
+            return;
+        }
+
+        if (isDragging) {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            
+            // Constrain x to canvas bounds
+            let mouseScreenX = clientX - rect.left;
+            mouseScreenX = Math.max(0, Math.min(mouseScreenX, width));
+            
+            activePoint.x = screenToMathX(mouseScreenX);
+            draw();
+        }
+    }
+
+    function endInteraction() {
+        if (isDragging) {
+            isDragging = false;
+            graphContainer.style.cursor = 'grab'; // Remain grabbable while point is active
+            draw(); // Redraw without drag visual cues
+        }
+    }
+
+    // Mouse events
+    canvas.addEventListener('mousedown', startInteraction);
+    window.addEventListener('mousemove', moveInteraction); // Attach to window so dragging continues if mouse leaves canvas slightly
+    window.addEventListener('mouseup', endInteraction);
+    
+    // Touch events for mobile
+    canvas.addEventListener('touchstart', startInteraction, {passive: false});
+    window.addEventListener('touchmove', moveInteraction, {passive: false});
+    window.addEventListener('touchend', endInteraction);
+
+    // Slider Event Listener
+    kSlider.addEventListener('input', function() {
+        kValue = parseFloat(this.value);
+        kDisplay.innerText = kValue.toFixed(1); 
+        draw(); // activePoint's Y is calculated dynamically on draw, so it automatically updates
+    });
+
+    // Handle window resize
+    window.addEventListener('resize', resizeCanvas);
+
+    // Initial setup
+    resizeCanvas();
+    
+    window.onload = function() {
+        if (window.MathJax) {
+            MathJax.typesetPromise();
+        }
+    }
+</script>
+</body>
+</html>

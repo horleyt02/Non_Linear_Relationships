@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Non-Linear Relationships - Catholic Education Diocese of Wollongong</title>
+    
+    <!-- Load Lato Font as per CEDoW Brand Guidelines -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Configure Tailwind with CEDoW Brand Colours -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cedow: {
+                            darkblue: '#0D2C6B',
+                            white: '#FFFFFF',
+                            silver: '#D1D2D4',
+                            black: '#231F20',
+                            aqua: '#188296',
+                            charcoal: '#4C4C4E',
+                            gold: '#FBAF3F'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Lato', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #f9fafb; /* Very light grey for contrast */
+        }
+        .font-light { font-weight: 300; }
+        .font-regular { font-weight: 400; }
+        .font-bold { font-weight: 700; }
+    </style>
+</head>
+<body class="text-cedow-charcoal min-h-screen flex flex-col">
+
+    <header class="bg-cedow-darkblue text-cedow-white shadow-md border-b-4 border-cedow-gold">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <!-- Using Lato Light for the main heading as per guidelines -->
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-light tracking-tight">
+                Non-Linear Relationships
+            </h1>
+            <p class="mt-4 max-w-3xl text-lg sm:text-xl font-regular text-cedow-silver">
+                Explore our collection of interactive modules covering Quadratics, Exponentials, and Simultaneous Equations.
+            </p>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full space-y-16">
+
+        <!-- SECTION 1: QUADRATICS -->
+        <section>
+            <div class="border-b-2 border-cedow-silver mb-8 pb-2">
+                <h2 class="text-3xl font-light text-cedow-darkblue">Quadratic Relationships</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- 1. Wide or Narrow -->
+                <a href="quadratic_dilation.html" class="group block bg-white rounded-xl shadow-sm border border-cedow-silver overflow-hidden hover:shadow-lg hover:border-cedow-aqua transition-all duration-300 transform hover:-translate-y-1">
+                    <div class="relative h-48 w-full bg-cedow-silver">
+                        <img src="quadratic_dilation_thumbnail.png" alt="Thumbnail for Wide or Narrow" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold text-cedow-darkblue group-hover:text-cedow-aqua transition-colors">Quadratic Relationships (Parabola): Wide or Narrow</h3>
+                        <div class="mt-4 flex items-center text-sm font-bold text-cedow-gold group-hover:text-cedow-aqua transition-colors">
+                            Launch Interactive
+                            <svg class="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- 2. Concavity -->
+                <a href="quadratic_concavity.html" class="group block bg-white rounded-xl shadow-sm border border-cedow-silver overflow-hidden hover:shadow-lg hover:border-cedow-aqua transition-all duration-300 transform hover:-translate-y-1">
+                    <div class="relative h-48 w-full bg-cedow-silver">
+                        <img src="quadratic_concavity_thumbnail.png" alt="Thumbnail for Concavity" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold text-cedow-darkblue group-hover:text-cedow-aqua transition-colors">Quadratic Relationships (Parabola): Concavity</h3>
+                        <div class="mt-4 flex items-center text-sm font-bold text-cedow-gold group-hover:text-cedow-aqua transition-colors">
+                            Launch Interactive
+                            <svg class="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- 3. Vertical movement -->
+                <a href="quadratic_vertical_movement.html" class="group block bg-white rounded-xl shadow-sm border border-cedow-silver overflow-hidden hover:shadow-lg hover:border-cedow-aqua transition-all duration-300 transform hover:-translate-y-1">
+                    <div class="relative h-48 w-full bg-cedow-silver">
+                        <img src="quadratic_vertical_movement_thumbnail.png" alt="Thumbnail for Vertical movement" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold text-cedow-darkblue group-hover:text-cedow-aqua transition-colors">Quadratic Relationships (Parabola): Vertical movement</h3>
+                        <div class="mt-4 flex items-center text-sm font-bold text-cedow-gold group-hover:text-cedow-aqua transition-colors">
+                            Launch Interactive
+                            <svg class="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- 4. Vertex -->
+                <a href="quadratic_vertex.html" class="group block bg-white rounded-xl shadow-sm border border-cedow-silver overflow-hidden hover:shadow-lg hover:border-cedow-aqua transition-all duration-300 transform hover:-translate-y-1">
+                    <div class="relative h-48 w-full bg-cedow-silver">
+                        <img src="quadratic_vertex_thumbnail.png" alt="Thumbnail for Vertex" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold text-cedow-darkblue group-hover:text-cedow-aqua transition-colors">Quadratic Relationships (Parabola): Vertex of the parabola</h3>
+                        <div class="mt-4 flex items-center text-sm font-bold text-cedow-gold group-hover:text-cedow-aqua transition-colors">
+                            Launch Interactive
+                            <svg class="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- 5. Axis of Symmetry -->
+                <a href="quadratic_axis_of_symmetry.html" class="group block bg-white rounded-xl shadow-sm border border-cedow-silver overflow-hidden hover:shadow-lg hover:border-cedow-aqua transition-all duration-300 transform hover:-translate-y-1">
+                    <div class="relative h-48 w-full bg-cedow-silver">
+                        <img src="quadratic_axis_of_symmetry_thumbnail.png" alt="Thumbnail for Axis of Symmetry" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold text-cedow-darkblue group-hover:text-cedow-aqua transition-colors">Quadratic Relationships (Parabola): Axis of Symmetry</h3>
+                        <div class="mt-4 flex items-center text-sm font-bold text-cedow-gold group-hover:text-cedow-aqua transition-colors">
+                            Launch Interactive
+                            <svg class="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- 6. x-intercepts -->
+                <a href="quadratic_x_intercepts.html" class="group block bg-white rounded-xl shadow-sm border border-cedow-silver overflow-hidden hover:shadow-lg hover:border-cedow-aqua transition-all duration-300 transform hover:-translate-y-1">
+                    <div class="relative h-48 w-full bg-cedow-silver">
+                        <img src="quadratic_x_intercepts_thumbnail.png" alt="Thumbnail for x-intercepts" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold text-cedow-darkblue group-hover:text-cedow-aqua transition-colors">Quadratic Relationships (Parabola): x-intercepts</h3>
+                        <div class="mt-4 flex items-center text-sm font-bold text-cedow-gold group-hover:text-cedow-aqua transition-colors">
+                            Launch Interactive
+                            <svg class="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                    </div>
+                </a>
+
+            </div>
+        </section>
+
+        <!-- SECTION 2: EXPONENTIALS -->
+        <section>
+            <div class="border-b-2 border-cedow-silver mb-8 pb-2">
+                <h2 class="text-3xl font-light text-cedow-darkblue">Exponential Relationships</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- 7. Steepness -->
+                <a href="exponential_steepness.html" class="group block bg-white rounded-xl shadow-sm border border-cedow-silver overflow-hidden hover:shadow-lg hover:border-cedow-aqua transition-all duration-300 transform hover:-translate-y-1">
+                    <div class="relative h-48 w-full bg-cedow-silver">
+                        <img src="exponential_steepness_thumbnail.png" alt="Thumbnail for Steepness" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold text-cedow-darkblue group-hover:text-cedow-aqua transition-colors">Exponential Relationships: Steepness</h3>
+                        <div class="mt-4 flex items-center text-sm font-bold text-cedow-gold group-hover:text-cedow-aqua transition-colors">
+                            Launch Interactive
+                            <svg class="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- 8. Growth or Decay -->
+                <a href="exponential_growth_or_decay.html" class="group block bg-white rounded-xl shadow-sm border border-cedow-silver overflow-hidden hover:shadow-lg hover:border-cedow-aqua transition-all duration-300 transform hover:-translate-y-1">
+                    <div class="relative h-48 w-full bg-cedow-silver">
+                        <img src="exponential_growth_or_decay_thumbnail.png" alt="Thumbnail for Growth or Decay" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold text-cedow-darkblue group-hover:text-cedow-aqua transition-colors">Exponential Relationships: Growth or Decay</h3>
+                        <div class="mt-4 flex items-center text-sm font-bold text-cedow-gold group-hover:text-cedow-aqua transition-colors">
+                            Launch Interactive
+                            <svg class="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- 9. Asymptotes -->
+                <a href="exponential_asymptote.html" class="group block bg-white rounded-xl shadow-sm border border-cedow-silver overflow-hidden hover:shadow-lg hover:border-cedow-aqua transition-all duration-300 transform hover:-translate-y-1">
+                    <div class="relative h-48 w-full bg-cedow-silver">
+                        <img src="exponential_asymptote_thumbnail.png" alt="Thumbnail for Asymptotes" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold text-cedow-darkblue group-hover:text-cedow-aqua transition-colors">Exponential Relationships: Asymptotes</h3>
+                        <div class="mt-4 flex items-center text-sm font-bold text-cedow-gold group-hover:text-cedow-aqua transition-colors">
+                            Launch Interactive
+                            <svg class="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                    </div>
+                </a>
+
+            </div>
+        </section>
+
+        <!-- SECTION 3: SIMULTANEOUS EQUATIONS -->
+        <section>
+            <div class="border-b-2 border-cedow-silver mb-8 pb-2">
+                <h2 class="text-3xl font-light text-cedow-darkblue">Simultaneous Equations</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- 10. Simultaneous Equations -->
+                <a href="simultaneous_equations.html" class="group block bg-white rounded-xl shadow-sm border border-cedow-silver overflow-hidden hover:shadow-lg hover:border-cedow-aqua transition-all duration-300 transform hover:-translate-y-1">
+                    <div class="relative h-48 w-full bg-cedow-silver">
+                        <img src="simultaneous_equations_thumbnail.png" alt="Thumbnail for Simultaneous Equations" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold text-cedow-darkblue group-hover:text-cedow-aqua transition-colors">Simultaneous Equations</h3>
+                        <div class="mt-4 flex items-center text-sm font-bold text-cedow-gold group-hover:text-cedow-aqua transition-colors">
+                            Launch Interactive
+                            <svg class="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                    </div>
+                </a>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-cedow-darkblue mt-auto">
+        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 border-t border-cedow-charcoal">
+            <p class="text-center text-cedow-silver text-sm font-regular">
+                &copy; <span id="year"></span> Catholic Education Diocese of Wollongong. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Set current year in footer
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>

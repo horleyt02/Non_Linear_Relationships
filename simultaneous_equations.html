@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transformation Graph Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Compact toggle styling */
+        .toggle-btn {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        
+        .toggle-btn.off {
+            background-color: transparent !important;
+            border-color: #cbd5e1;
+        }
+        
+        .toggle-red { background-color: #dc2626; border-color: #dc2626; }
+        .toggle-blue { background-color: #2563eb; border-color: #2563eb; }
+        .toggle-green { background-color: #16a34a; border-color: #16a34a; }
+
+        /* Compact range slider styling */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+            height: 20px;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 14px;
+            width: 14px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            margin-top: -5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #cbd5e1;
+            border-radius: 2px;
+        }
+        input[type=range]:focus {
+            outline: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col h-screen w-full overflow-hidden text-gray-800 font-sans select-none">
+
+    <!-- Top Header -->
+    <div class="w-full bg-white border-b border-gray-300 shadow-sm py-2 z-20 flex justify-center items-center flex-shrink-0 h-12">
+        <h1 class="text-xl font-semibold text-gray-800">Simultaneous Equations</h1>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="flex flex-1 overflow-hidden">
+        
+        <!-- Left Sidebar (Compact layout to avoid scrolling) -->
+        <div class="w-72 bg-white border-r border-gray-300 shadow-lg flex flex-col z-10 h-full">
+            <div class="p-3 border-b border-gray-200">
+                <p class="text-xs text-gray-500 leading-tight">Move the sliders to change values. Click the colored circle to turn visibility on or off. Hover over the graph to trace coordinates.</p>
+            </div>
+
+            <div class="p-3 flex-1 flex flex-col justify-between overflow-y-auto">
+                <!-- Equations -->
+                <div class="space-y-2 mb-2">
+                    <div class="flex items-center space-x-3 p-1 rounded hover:bg-gray-50">
+                        <div id="toggle-red" class="toggle-btn toggle-red" onclick="toggleVisibility('red')"></div>
+                        <div class="text-base font-serif italic flex-1">y = mx + b</div>
+                    </div>
+                    <div class="flex items-center space-x-3 p-1 rounded hover:bg-gray-50">
+                        <div id="toggle-blue" class="toggle-btn toggle-blue" onclick="toggleVisibility('blue')"></div>
+                        <div class="text-base font-serif italic flex-1">y = kx<sup>2</sup> + c</div>
+                    </div>
+                    <div class="flex items-center space-x-3 p-1 rounded hover:bg-gray-50">
+                        <div id="toggle-green" class="toggle-btn toggle-green" onclick="toggleVisibility('green')"></div>
+                        <div class="text-base font-serif italic flex-1">y = a<sup>x</sup></div>
+                    </div>
+                </div>
+
+                <!-- Sliders -->
+                <div class="space-y-2 flex-1">
+                    <div class="bg-gray-50 p-2 rounded border border-gray-200">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-serif italic text-sm font-semibold">a = <span id="val-a">2</span></span>
+                        </div>
+                        <div class="flex items-center space-x-2 text-xs text-gray-500">
+                            <span>0</span>
+                            <input type="range" id="slider-a" min="0.001" max="10" step="0.001" value="2" oninput="updateValues()">
+                            <span>10</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 p-2 rounded border border-gray-200">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-serif italic text-sm font-semibold">b = <span id="val-b">0</span></span>
+                        </div>
+                        <div class="flex items-center space-x-2 text-xs text-gray-500">
+                            <span>-10</span>
+                            <input type="range" id="slider-b" min="-10" max="10" step="0.1" value="0" oninput="updateValues()">
+                            <span>10</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 p-2 rounded border border-gray-200">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-serif italic text-sm font-semibold">c = <span id="val-c">0</span></span>
+                        </div>
+                        <div class="flex items-center space-x-2 text-xs text-gray-500">
+                            <span>-10</span>
+                            <input type="range" id="slider-c" min="-10" max="10" step="0.1" value="0" oninput="updateValues()">
+                            <span>10</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 p-2 rounded border border-gray-200">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-serif italic text-sm font-semibold">k = <span id="val-k">1</span></span>
+                        </div>
+                        <div class="flex items-center space-x-2 text-xs text-gray-500">
+                            <span>-10</span>
+                            <input type="range" id="slider-k" min="-10" max="10" step="0.1" value="1" oninput="updateValues()">
+                            <span>10</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 p-2 rounded border border-gray-200">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-serif italic text-sm font-semibold">m = <span id="val-m">1</span></span>
+                        </div>
+                        <div class="flex items-center space-x-2 text-xs text-gray-500">
+                            <span>-10</span>
+                            <input type="range" id="slider-m" min="-10" max="10" step="0.1" value="1" oninput="updateValues()">
+                            <span>10</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Graphing Area -->
+        <div class="flex-1 relative cursor-crosshair bg-white" id="canvas-container">
+            <canvas id="graphCanvas" class="block w-full h-full"></canvas>
+            
+            <!-- Tooltip for coordinates -->
+            <div id="tooltip" class="absolute hidden bg-white text-gray-800 text-sm font-mono px-2 py-1 border border-gray-400 rounded shadow-sm pointer-events-none transform -translate-x-1/2 -translate-y-full mt-[-10px] z-30 whitespace-nowrap">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('graphCanvas');
+        const ctx = canvas.getContext('2d');
+        const container = document.getElementById('canvas-container');
+        const tooltip = document.getElementById('tooltip');
+
+        // Math Bounds
+        const MIN_X = -10;
+        const MAX_X = 10;
+        const MIN_Y = -10;
+        const MAX_Y = 10;
+
+        // State
+        let state = {
+            a: 2, b: 0, c: 0, k: 1, m: 1,
+            showRed: true, showBlue: true, showGreen: true,
+            hoverPoint: null // {x, y, color}
+        };
+
+        function resizeCanvas() {
+            const rect = container.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+            drawGraph();
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+        function mathToCanvas(mathX, mathY) {
+            const rect = container.getBoundingClientRect();
+            const canvasX = ((mathX - MIN_X) / (MAX_X - MIN_X)) * rect.width;
+            const canvasY = rect.height - ((mathY - MIN_Y) / (MAX_Y - MIN_Y)) * rect.height;
+            return { x: canvasX, y: canvasY };
+        }
+
+        function canvasToMath(canvasX, canvasY) {
+            const rect = container.getBoundingClientRect();
+            const mathX = MIN_X + (canvasX / rect.width) * (MAX_X - MIN_X);
+            const mathY = MIN_Y + ((rect.height - canvasY) / rect.height) * (MAX_Y - MIN_Y);
+            return { x: mathX, y: mathY };
+        }
+
+        function drawAxes() {
+            const rect = container.getBoundingClientRect();
+            const width = rect.width;
+            const height = rect.height;
+
+            ctx.clearRect(0, 0, width, height);
+
+            // Grid
+            ctx.strokeStyle = '#e5e7eb';
+            ctx.lineWidth = 1;
+            ctx.font = '12px Arial';
+            ctx.fillStyle = '#6b7280';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+
+            for (let i = MIN_X; i <= MAX_X; i++) {
+                if (i === 0) continue;
+                const p = mathToCanvas(i, 0);
+                ctx.beginPath();
+                ctx.moveTo(p.x, 0);
+                ctx.lineTo(p.x, height);
+                ctx.stroke();
+                if (i % 2 === 0) ctx.fillText(i.toString(), p.x, mathToCanvas(0, 0).y + 5);
+            }
+
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'middle';
+            for (let i = MIN_Y; i <= MAX_Y; i++) {
+                if (i === 0) continue;
+                const p = mathToCanvas(0, i);
+                ctx.beginPath();
+                ctx.moveTo(0, p.y);
+                ctx.lineTo(width, p.y);
+                ctx.stroke();
+                if (i % 2 === 0) ctx.fillText(i.toString(), mathToCanvas(0, 0).x - 5, p.y);
+            }
+
+            // Main Axes
+            ctx.strokeStyle = '#374151';
+            ctx.lineWidth = 1.5;
+            const origin = mathToCanvas(0, 0);
+
+            // X Axis
+            ctx.beginPath(); ctx.moveTo(0, origin.y); ctx.lineTo(width, origin.y); ctx.stroke();
+            // Y Axis
+            ctx.beginPath(); ctx.moveTo(origin.x, 0); ctx.lineTo(origin.x, height); ctx.stroke();
+
+            // Arrows & Labels
+            ctx.fillStyle = '#374151';
+            const arrowSize = 10;
+            
+            ctx.beginPath(); ctx.moveTo(width, origin.y); ctx.lineTo(width - arrowSize, origin.y - arrowSize/2); ctx.lineTo(width - arrowSize, origin.y + arrowSize/2); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(0, origin.y); ctx.lineTo(arrowSize, origin.y - arrowSize/2); ctx.lineTo(arrowSize, origin.y + arrowSize/2); ctx.fill();
+            ctx.font = 'italic 16px serif';
+            ctx.fillText('x', width - 15, origin.y - 15);
+
+            ctx.beginPath(); ctx.moveTo(origin.x, 0); ctx.lineTo(origin.x - arrowSize/2, arrowSize); ctx.lineTo(origin.x + arrowSize/2, arrowSize); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(origin.x, height); ctx.lineTo(origin.x - arrowSize/2, height - arrowSize); ctx.lineTo(origin.x + arrowSize/2, height - arrowSize); ctx.fill();
+            ctx.fillText('y', origin.x + 20, 15);
+        }
+
+        function drawCurve(func, color, isVisible) {
+            if (!isVisible) return;
+            const rect = container.getBoundingClientRect();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+
+            let firstPoint = true;
+            for (let px = 0; px <= rect.width; px += 2) {
+                const mathX = canvasToMath(px, 0).x;
+                const mathY = func(mathX);
+                const py = mathToCanvas(0, mathY).y;
+                
+                if (mathY < MIN_Y - 5 || mathY > MAX_Y + 5) {
+                    firstPoint = true;
+                    continue; // Skip drawing way out of bounds to avoid artifacting
+                }
+
+                if (firstPoint) {
+                    ctx.moveTo(px, py);
+                    firstPoint = false;
+                } else {
+                    ctx.lineTo(px, py);
+                }
+            }
+            ctx.stroke();
+        }
+
+        function drawGraph() {
+            drawAxes();
+            
+            const fRed = (x) => state.m * x + state.b;
+            const fBlue = (x) => state.k * x * x + state.c;
+            const fGreen = (x) => Math.pow(state.a, x);
+
+            drawCurve(fRed, '#dc2626', state.showRed);
+            drawCurve(fGreen, '#16a34a', state.showGreen);
+            drawCurve(fBlue, '#2563eb', state.showBlue);
+
+            // Draw hovered point
+            if (state.hoverPoint) {
+                const pt = mathToCanvas(state.hoverPoint.x, state.hoverPoint.y);
+                ctx.beginPath();
+                ctx.arc(pt.x, pt.y, 5, 0, 2 * Math.PI);
+                ctx.fillStyle = state.hoverPoint.color;
+                ctx.fill();
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                tooltip.style.left = `${pt.x}px`;
+                tooltip.style.top = `${pt.y - 10}px`;
+                tooltip.style.borderColor = state.hoverPoint.color;
+                tooltip.classList.remove('hidden');
+                
+                let displayX = formatNumber(state.hoverPoint.x);
+                let displayY = formatNumber(state.hoverPoint.y);
+                tooltip.innerHTML = `(${displayX}, ${displayY})`;
+            } else {
+                tooltip.classList.add('hidden');
+            }
+        }
+
+        function formatNumber(num) {
+            if (Math.abs(num) < 0.0001) return "0";
+            if (Math.abs(num - Math.round(num)) < 0.01) return Math.round(num).toString();
+            return num.toFixed(2);
+        }
+
+        function updateValues() {
+            state.a = parseFloat(document.getElementById('slider-a').value);
+            state.b = parseFloat(document.getElementById('slider-b').value);
+            state.c = parseFloat(document.getElementById('slider-c').value);
+            state.k = parseFloat(document.getElementById('slider-k').value);
+            state.m = parseFloat(document.getElementById('slider-m').value);
+
+            document.getElementById('val-a').innerText = state.a;
+            document.getElementById('val-b').innerText = state.b;
+            document.getElementById('val-c').innerText = state.c;
+            document.getElementById('val-k').innerText = state.k;
+            document.getElementById('val-m').innerText = state.m;
+
+            // Recalculate hover point y-value if it exists
+            if (state.hoverPoint) {
+                const x = state.hoverPoint.x;
+                if (state.hoverPoint.id === 'red') state.hoverPoint.y = state.m * x + state.b;
+                if (state.hoverPoint.id === 'blue') state.hoverPoint.y = state.k * x * x + state.c;
+                if (state.hoverPoint.id === 'green') state.hoverPoint.y = Math.pow(state.a, x);
+            }
+
+            drawGraph();
+        }
+
+        function toggleVisibility(color) {
+            const btn = document.getElementById(`toggle-${color}`);
+            btn.classList.toggle('off');
+            
+            if (color === 'red') state.showRed = !state.showRed;
+            if (color === 'blue') state.showBlue = !state.showBlue;
+            if (color === 'green') state.showGreen = !state.showGreen;
+            
+            if (state.hoverPoint && state.hoverPoint.id === color && !state[`show${color.charAt(0).toUpperCase() + color.slice(1)}`]) {
+                state.hoverPoint = null;
+            }
+            drawGraph();
+        }
+
+        // Smooth point tracking on mouse move
+        container.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const px = e.clientX - rect.left;
+            const py = e.clientY - rect.top;
+            
+            const mathCoord = canvasToMath(px, py);
+            const x0 = mathCoord.x;
+            const y0 = mathCoord.y;
+
+            let minPixelDist = Infinity;
+            let closestPoint = null;
+
+            const checkCurve = (isVisible, evalY, colorHex, id) => {
+                if (!isVisible) return;
+                const y = evalY(x0);
+                
+                // Calculate pixel distance from mouse to the curve's point at this exact X
+                const curvePy = mathToCanvas(x0, y).y;
+                const dist = Math.abs(py - curvePy);
+
+                // Snap threshold: 50 pixels vertical distance
+                if (dist < minPixelDist && dist < 50) {
+                    minPixelDist = dist;
+                    closestPoint = { x: x0, y: y, color: colorHex, id: id };
+                }
+            };
+
+            checkCurve(state.showRed, (x) => state.m * x + state.b, '#dc2626', 'red');
+            checkCurve(state.showBlue, (x) => state.k * x * x + state.c, '#2563eb', 'blue');
+            checkCurve(state.showGreen, (x) => Math.pow(state.a, x), '#16a34a', 'green');
+
+            state.hoverPoint = closestPoint;
+            drawGraph();
+        });
+
+        container.addEventListener('mouseleave', () => {
+            state.hoverPoint = null;
+            drawGraph();
+        });
+
+        // Initialize
+        setTimeout(() => resizeCanvas(), 50);
+    </script>
+</body>
+</html>
