@@ -151,12 +151,12 @@
             <div class="expression-row" style="flex-direction: column; align-items: stretch; padding-bottom: 20px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                      <div class="math-content" style="margin-bottom: 0;">
-                        \( k = \) <span id="k-value-display">1.0</span>
+                        \( k = \) <span id="k-value-display">1.00</span>
                     </div>
                 </div>
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <span class="text-sm text-gray-500">0</span>
-                    <input type="range" id="k-slider" min="0" max="10" step="0.1" value="1">
+                    <input type="range" id="k-slider" min="0" max="10" step="0.01" value="1">
                     <span class="text-sm text-gray-500">10</span>
                 </div>
             </div>
@@ -179,10 +179,10 @@
     const tooltip = document.getElementById('tooltip');
 
     // Graph Configuration
-    const xMin = -10;
-    const xMax = 10;
-    const yMin = -10;
-    const yMax = 10;
+    const xMin = -11;
+    const xMax = 11;
+    const yMin = -2;
+    const yMax = 20;
     
     // State variables
     let kValue = 1;
@@ -247,7 +247,7 @@
         ctx.lineWidth = 1;
 
         // Vertical grid lines
-        for (let x = xMin; x <= xMax; x++) {
+        for (let x = Math.ceil(xMin); x <= Math.floor(xMax); x++) {
             if (x === 0) continue;
             const screenX = mathToScreenX(x);
             ctx.moveTo(screenX, 0);
@@ -255,7 +255,7 @@
         }
 
         // Horizontal grid lines
-        for (let y = yMin; y <= yMax; y++) {
+        for (let y = Math.ceil(yMin); y <= Math.floor(yMax); y++) {
             if (y === 0) continue;
             const screenY = mathToScreenY(y);
             ctx.moveTo(0, screenY);
@@ -318,17 +318,17 @@
         ctx.textAlign = 'center';
         ctx.textBaseline = 'top';
 
-        // X-axis labels
-        for (let x = xMin; x <= xMax; x += 2) {
-            if (x === 0) continue;
+        // X-axis labels (Even numbers only)
+        for (let x = Math.ceil(xMin); x <= Math.floor(xMax); x++) {
+            if (x === 0 || x % 2 !== 0) continue;
             ctx.fillText(x, mathToScreenX(x), originY + 5);
         }
 
         ctx.textAlign = 'right';
         ctx.textBaseline = 'middle';
         // Y-axis labels
-        for (let y = yMin; y <= yMax; y += 2) {
-            if (y === 0) continue;
+        for (let y = Math.ceil(yMin); y <= Math.floor(yMax); y++) {
+            if (y === 0 || y % 2 !== 0) continue;
             ctx.fillText(y, originX - 5, mathToScreenY(y));
         }
 
@@ -349,7 +349,6 @@
         ctx.strokeStyle = color;
         ctx.lineWidth = lineWidth;
 
-        const step = (xMax - xMin) / width;
         let isFirstPoint = true;
 
         for (let screenX = 0; screenX <= width; screenX++) {
@@ -372,7 +371,7 @@
         ctx.stroke();
     }
 
-    // Function to try and display "exact" forms
+    // Function to try and display "exact" forms efficiently
     function formatExact(val) {
         if (Math.abs(Math.round(val) - val) < 0.0001) return Math.round(val).toString();
         
@@ -388,7 +387,8 @@
         if (Math.abs(Math.round(squared) - squared) < 0.0001) {
              const roundedSq = Math.round(squared);
              if (!Number.isInteger(Math.sqrt(roundedSq))) {
-                 return (val < 0 ? "-" : "") + `\\sqrt{${roundedSq}}`;
+                 // Using native HTML sqrt instead of MathJax for massive performance boost during dragging
+                 return (val < 0 ? "-" : "") + `√${roundedSq}`;
              }
         }
 
@@ -442,16 +442,9 @@
         const exactX = formatExact(activePoint.x);
         const exactY = formatExact(mathY);
 
-        tooltip.innerHTML = `\\( (${exactX}, ${exactY}) \\)`;
-        
-        if (window.MathJax) {
-            MathJax.typesetPromise([tooltip]).then(() => {
-                positionTooltip(screenX, screenY);
-            });
-        } else {
-             tooltip.innerHTML = `(${activePoint.x.toFixed(2)}, ${mathY.toFixed(2)})`;
-             positionTooltip(screenX, screenY);
-        }
+        // Native HTML formatting prevents the browser from getting 'stuck' evaluating MathJax equations on mouse move
+        tooltip.innerHTML = `(${exactX}, ${exactY})`;
+        positionTooltip(screenX, screenY);
     }
 
     function positionTooltip(screenX, screenY) {
@@ -587,10 +580,10 @@
     window.addEventListener('touchmove', moveInteraction, {passive: false});
     window.addEventListener('touchend', endInteraction);
 
-    // Slider Event Listener
+    // Slider Event Listener (Updated for 2 decimal places)
     kSlider.addEventListener('input', function() {
         kValue = parseFloat(this.value);
-        kDisplay.innerText = kValue.toFixed(1); 
+        kDisplay.innerText = kValue.toFixed(2); 
         draw(); // activePoint's Y is calculated dynamically on draw, so it automatically updates
     });
 
@@ -602,6 +595,7 @@
     
     window.onload = function() {
         if (window.MathJax) {
+            // Initial typeset for the equations in the control panel
             MathJax.typesetPromise();
         }
     }
