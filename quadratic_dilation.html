@@ -373,7 +373,7 @@
 
     // Function to try and display "exact" forms efficiently
     function formatExact(val) {
-        if (Math.abs(Math.round(val) - val) < 0.0001) return Math.round(val).toString();
+        if (Math.abs(Math.round(val) - val) < 0.0001) return Math.round(val).toFixed(2);
         
         const denominators = [2, 3, 4, 5, 8, 10];
         for (let d of denominators) {
@@ -516,8 +516,9 @@
         const proximity = checkProximityToCurves(mouseScreenX, mouseScreenY);
 
         if (proximity !== null) {
+            let rawX = screenToMathX(mouseScreenX);
             activePoint = {
-                x: screenToMathX(mouseScreenX),
+                x: Math.round(rawX * 100) / 100,
                 curveIndex: proximity.index
             };
             isDragging = true;
@@ -557,7 +558,8 @@
             let mouseScreenX = clientX - rect.left;
             mouseScreenX = Math.max(0, Math.min(mouseScreenX, width));
             
-            activePoint.x = screenToMathX(mouseScreenX);
+            let rawX = screenToMathX(mouseScreenX);
+            activePoint.x = Math.round(rawX * 100) / 100;
             draw();
         }
     }
