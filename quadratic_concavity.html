@@ -151,12 +151,12 @@
             <div class="expression-row" style="flex-direction: column; align-items: stretch; padding-bottom: 20px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                      <div class="math-content" style="margin-bottom: 0;">
-                        \( k = \) <span id="k-value-display">1.0</span>
+                        \( k = \) <span id="k-value-display">1.00</span>
                     </div>
                 </div>
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <span class="text-sm text-gray-500">-10</span>
-                    <input type="range" id="k-slider" min="-10" max="10" step="0.1" value="1">
+                    <input type="range" id="k-slider" min="-10" max="10" step="0.01" value="1">
                     <span class="text-sm text-gray-500">10</span>
                 </div>
             </div>
@@ -178,11 +178,11 @@
     const kDisplay = document.getElementById('k-value-display');
     const tooltip = document.getElementById('tooltip');
 
-    // Graph Configuration
-    const xMin = -10;
-    const xMax = 10;
-    const yMin = -10;
-    const yMax = 10;
+    // Graph Configuration updated to -11 to 11
+    const xMin = -11;
+    const xMax = 11;
+    const yMin = -11;
+    const yMax = 11;
     
     // State variables
     let kValue = 1;
@@ -246,7 +246,7 @@
         ctx.lineWidth = 1;
 
         // Vertical grid lines
-        for (let x = xMin; x <= xMax; x++) {
+        for (let x = Math.ceil(xMin); x <= Math.floor(xMax); x++) {
             if (x === 0) continue;
             const screenX = mathToScreenX(x);
             ctx.moveTo(screenX, 0);
@@ -254,7 +254,7 @@
         }
 
         // Horizontal grid lines
-        for (let y = yMin; y <= yMax; y++) {
+        for (let y = Math.ceil(yMin); y <= Math.floor(yMax); y++) {
             if (y === 0) continue;
             const screenY = mathToScreenY(y);
             ctx.moveTo(0, screenY);
@@ -317,16 +317,18 @@
         ctx.textAlign = 'center';
         ctx.textBaseline = 'top';
 
-        // X-axis labels
-        for (let x = xMin; x <= xMax; x += 2) {
+        // X-axis labels (starting from an even number to keep every 2 pattern)
+        let startX = Math.ceil(xMin / 2) * 2;
+        for (let x = startX; x <= xMax; x += 2) {
             if (x === 0) continue;
             ctx.fillText(x, mathToScreenX(x), originY + 5);
         }
 
         ctx.textAlign = 'right';
         ctx.textBaseline = 'middle';
-        // Y-axis labels
-        for (let y = yMin; y <= yMax; y += 2) {
+        // Y-axis labels (starting from an even number)
+        let startY = Math.ceil(yMin / 2) * 2;
+        for (let y = startY; y <= yMax; y += 2) {
             if (y === 0) continue;
             ctx.fillText(y, originX - 5, mathToScreenY(y));
         }
@@ -585,10 +587,10 @@
     window.addEventListener('touchmove', moveInteraction, {passive: false});
     window.addEventListener('touchend', endInteraction);
 
-    // Slider Event Listener
+    // Slider Event Listener updating 2 decimal places
     kSlider.addEventListener('input', function() {
         kValue = parseFloat(this.value);
-        kDisplay.innerText = kValue.toFixed(1); 
+        kDisplay.innerText = kValue.toFixed(2); 
         draw(); // activePoint's Y is calculated dynamically on draw, so it automatically updates
     });
 
